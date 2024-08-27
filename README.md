@@ -1,6 +1,6 @@
 Complex hierarchical structures analysis in single-cell data with Poincaré deep manifold transformation
 =============
-![image](https://github.com/Westlake-AI/DV/blob/master/Figures/Framework.png)
+![image](https://github.com/Westlake-AI/PoincareDMT/tree/master/Figures/Framework.png)
 
 Overview
 =============
