@@ -13,9 +13,9 @@ import umap
 import pacmap
 import forceatlas2
 import plotly.graph_objects as go
-import wandb
-from eval.eval_xu import Eval_all, Eval_all_sample, Eval_all_poincaremaps, Eval_all_sample_poincaremaps, Eval_all_scdhmap, Eval_all_sample_scdhmap
+from eval.eval import Eval_all
 from poincare_maps import *
+
 
 torch.set_num_threads(2)
 
@@ -23,7 +23,6 @@ def up_mainfig_emb(data, ins_emb,
     label, n_clusters=10, num_cf_example=2,
 ):
     color = np.array(label)
-    import plotly.express as px
 
     Curve = ins_emb[:, 0]
     Curve2 = ins_emb[:, 1]
@@ -92,20 +91,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--data_name",
         type=str,
-        default="Paul",
+        default="Olsson",
         choices=[
-            "MyeloidProgenitors",
-            "Moignard2015",
             "Olsson",
-            "Krumsiek11",
-            "Planaria",
-            "CELEGAN",
-            "CELEGANPCA100",
-            "UCEPI",
-            "UCEPIPcaKnn",
-            'PaulPcaKnn',
-            'Paul',
-            'ToggleSwitch',
         ],
     )
 
@@ -128,15 +116,6 @@ if __name__ == "__main__":
     runname = 'baseline_{}_{}'.format(
         args.data_name, 
         args.method)
-    
-    wandb.init(
-        name=runname,
-        project="sc_lineage_paul_final_" + args.project_name,
-        entity="sky-yongjie-xu",
-        mode="offline" if bool(args.offline) else "online",
-        save_code=True,
-        config=args,
-    )
 
     data_train = dataset_f(
         data_name=args.data_name,
@@ -252,29 +231,4 @@ if __name__ == "__main__":
 
     np.save('latent.npy', latent)
 
-    if args.method == 'poincaremaps':
-        if args.data_name == 'CELEGAN' or args.data_name == 'CELEGANPCA100' or args.data_name == 'UCEPI' or args.data_name == 'UCEPIPcaKnn' or args.data_name == 'Planaria':
-            result_index = Eval_all_sample_poincaremaps(data, latent, label, data_name=args.data_name)
-        else:
-            result_index = Eval_all_poincaremaps(data, latent, label)
-    if args.method == 'scdhmap':
-        if args.data_name == 'CELEGAN' or args.data_name == 'CELEGANPCA100' or args.data_name == 'UCEPI' or args.data_name == 'UCEPIPcaKnn' or args.data_name == 'Planaria':
-            result_index = Eval_all_sample_scdhmap(data, latent, label, data_name=args.data_name)
-        else:
-            result_index = Eval_all_scdhmap(data, latent, label)
-    else:
-        if args.data_name == 'CELEGAN' or args.data_name == 'CELEGANPCA100' or args.data_name == 'UCEPI' or args.data_name == 'UCEPIPcaKnn' or args.data_name == 'Planaria':
-            result_index = Eval_all_sample(data, latent, label, metric_e=args.metric, data_name=args.data_name)
-        else:
-            result_index = Eval_all(data, latent, label, metric_e=args.metric)
-
-    result_dict = {
-        'metric/Q_local':result_index[0],
-        'metric/Q_global':result_index[1],
-        }
-    wandb.log(result_dict)
-    wandb.log(
-        {
-            "main_easy/fig_easy": up_mainfig_emb(data, latent, label),
-        }
-    )
+    result_index = Eval_all(data, latent, label, metric_e=args.metric)

@@ -17,7 +17,7 @@ from dataloader import data_base
 from manifolds.hyperbolic_project import ToPoincare
 from layers.hyp_layers import HypLinear, HypAct
 import manifolds
-from eval.eval_xu import Eval_all, Eval_all_sample
+from eval.eval import Eval_all, Eval_all_sample
 
 torch.set_num_threads(2)
 
@@ -456,15 +456,15 @@ if __name__ == "__main__":
     )
     parser.add_argument("--detaalpha", type=float, default=1.005)
     parser.add_argument("--l2alpha", type=float, default=10)
-    parser.add_argument("--nu", type=float, default=1e-2)
-    parser.add_argument("--nu_rfa", type=float, default=1e-2)
+    parser.add_argument("--nu", type=float, default=0.03)
+    parser.add_argument("--nu_rfa", type=float, default=0.01)
     parser.add_argument("--num_link_aim", type=float, default=0.2)
     parser.add_argument("--num_fea_aim", type=float, default=2000)
     parser.add_argument("--K_plot", type=int, default=40)
     parser.add_argument("--save_checkpoint", type=int, default=0)
 
     parser.add_argument("--num_fea_per_pat", type=int, default=80)
-    parser.add_argument("--K", type=int, default=5)
+    parser.add_argument("--K", type=int, default=10)
     parser.add_argument("--Uniform_t", type=float, default=1)
     parser.add_argument("--Bernoulli_t", type=float, default=-1)
     parser.add_argument("--Normal_t", type=float, default=-1)
@@ -479,13 +479,13 @@ if __name__ == "__main__":
     parser.add_argument("--num_pat", type=int, default=8)
     parser.add_argument("--num_latent_dim", type=int, default=2)
     parser.add_argument("--augNearRate", type=float, default=1000)
-    parser.add_argument("--eta", type=float, default=1)
+    parser.add_argument("--eta", type=float, default=10)
     parser.add_argument("--knn", type=int, default=5)
     parser.add_argument("--n_components", type=int, default=50)
     parser.add_argument("--sigma", type=float, default=1.0)
     parser.add_argument("--explevel", type=int, default=3)
-    parser.add_argument("--batch_size", type=int, default=512,)
-    parser.add_argument("--epochs", type=int, default=50000)
+    parser.add_argument("--batch_size", type=int, default=38,)
+    parser.add_argument("--epochs", type=int, default=400)
     parser.add_argument("--lr", type=float, default=1e-3, metavar="LR")
 
     args = pl.Trainer.add_argparse_args(parser)
