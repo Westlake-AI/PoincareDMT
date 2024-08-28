@@ -1089,14 +1089,7 @@ model.rotate()
 model.plot('rot', labels=true_labels, file_name=fout + '_rotated', 
         title_name='DHV rotated', zoom=None, show=True, bbox=(1.0, 0.7), ms=ms, coldict=col_dict, leg=True)
 
-
-### pseudotime
-sc.pp.neighbors(sadata, n_neighbors=10)
-sc.pp.neighbors(sadata, n_neighbors=10, method='gauss', knn=False)
-sc.tl.diffmap(sadata)
-sc.tl.dpt(sadata, n_branchings=1)
-
-### Analysis
+### Pseudotime inference
 np.random.seed(seed=2018)
 true_labels_ori = np.copy(true_labels)
 model_name = args.data_name
