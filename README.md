@@ -26,8 +26,7 @@ python main_batch_correction.py
 python main_gene_selection.py
 
 4. **Baseline**:
-python main_baseline.py
-python main_baseline_batch_correction.py
+python main_baseline.py or main_baseline_batch_correction.py
 
 5. **Visualization and Pseudotime inference**:
 python main_visualization_pseudotime.py
