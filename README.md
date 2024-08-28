@@ -19,21 +19,21 @@ conda activate poincaredmt
 1. **Dimensionality reduction**:
 python main.py
 
-2. **Batch correction**
+2. **Batch correction**:
 python main_batch_correction.py
 
-3. **Gene selection**
+3. **Gene selection**:
 python main_gene_selection.py
 
-4. **Baseline**
+4. **Baseline**:
 python main_baseline.py
 python main_baseline_batch_correction.py
 
-5. **Visualization and Pseudotime inference**
+5. **Visualization and Pseudotime inference**:
 python main_visualization_pseudotime.py
 
 ## Contact
 
 If you have any problem about this package, please create an Issue or send us an Email at:
-- **Author**:[Yongjie Xu][xuyongjie@westlake.edu.cn]
-- **Author**:[Zelin Zang][zangzelin@westlake.edu.cn]
+- **Author**: [Yongjie Xu][xuyongjie@westlake.edu.cn]
+- **Author**: [Zelin Zang][zangzelin@westlake.edu.cn]
