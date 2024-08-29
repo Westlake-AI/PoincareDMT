@@ -807,7 +807,7 @@ class PoincareMaps:
                     axs[i, j].add_patch(circle)
                     axs[i, j].plot(0, 0, 'x', c=(0, 0, 0), ms=3)
                     axs[i, j].axis('equal')
-                    sc = axs[i, j].scatter(poincare_coord[:, 0], poincare_coord[:, 1], c=data[:, l], s=5, cmap=cm)    
+                    sc = axs[i, j].scatter(poincare_coord[:, 0], poincare_coord[:, 1], c=data[:, l], s=0.05, cmap=cm)    
                     axs[i, j].set_title(markesnames[l], fontsize=fs)
                     plt.colorbar(sc, ax=axs[i,j])
 
@@ -818,6 +818,54 @@ class PoincareMaps:
         if file_name:
             plt.savefig(file_name + '.png', format='png', dpi=600)
 
+    def plot_cluster_inter_markers(self, data, label, cluster1, cluster2, markesnames, pm_type='rot', file_name=None, fs=8, sc=3):
+        if pm_type == 'ori':
+            poincare_coord = self.coordinates
+        elif pm_type == 'rot':
+            poincare_coord = self.coordinates_rotated
+
+        data = data[(label == cluster1) | (label == cluster2)]
+        poincare_coord = poincare_coord[(label == cluster1) | (label == cluster2)]
+
+        n_plt = np.size(data, 1)    
+        
+        # n2 = int(np.sqrt(n_plt))
+        n2 = 3
+        n1 = n_plt // n2
+        
+        if n1*n2 < n_plt:
+            n1 += 1
+
+        if n1 == 1:
+            n1 = 2
+
+        if n2 == 1:
+            n2 = 2 
+        
+        f, axs = plt.subplots(n1, n2, sharey=False, figsize=(n2*sc, n1*sc))
+
+        cm = plt.cm.get_cmap('jet')
+
+        l=0
+        for i in range(n1):
+            for j in range(n2):            
+                axs[i, j].axis('off')
+                axs[i, j].axis('equal')
+                if l < n_plt:
+                    circle = plt.Circle((0, 0), radius=1, color='black', fc="none")
+                    axs[i, j].add_patch(circle)
+                    axs[i, j].plot(0, 0, 'x', c=(0, 0, 0), ms=3)
+                    axs[i, j].axis('equal')
+                    sc = axs[i, j].scatter(poincare_coord[:, 0], poincare_coord[:, 1], c=data[:, l], s=0.05, cmap=cm)    
+                    axs[i, j].set_title(markesnames[l], fontsize=fs)
+                    plt.colorbar(sc, ax=axs[i,j])
+
+                    if l == n_plt:
+                        axs[i, j].legend(np.unique(labels), loc='center left', bbox_to_anchor=(1, 0.5), fontsize=fs)
+                l+=1
+
+        if file_name:
+            plt.savefig(file_name + '.png', format='png', dpi=600)
 
 import argparse
 
@@ -888,9 +936,34 @@ if data_name == 'Moignard2015':
     sadata.obsm['X_diffmap'] = np.load('logs/log_Moignard2015_baseline/path_diffmap_40/latent.npy')
     sadata.obsm['X_draw_graph_fa'] = np.load('logs/log_Moignard2015_baseline/path_forceatlas2_30/latent.npy')
     sadata.obsm['X_phate'] = np.load('logs/log_Moignard2015_baseline/path_phate/latent.npy')
-    poincare_coord = np.load('logs/log_Moignard2015_poin_maps/path_30_1.0_2.0/result/latent.npy')
-    dv_coord = np.load('logs/log_Moignard2015_dv_poin/path_euclidean_poin_dist_mobiusm_v2_dsml_100.0_0.001_-1.0_5_eu_poin_2_500_2.0_Adam_leaky_relu_5_1.0_1.0_1000.0_no_no_dmt_aug_no_0.0005_0.0_0.0_100.0_500_300_100/latent_epoch_299.npy')
-    dhv_coord = np.load('logs/log_Moignard2015_new/path_Ours/latent.npy')
+    # poincare_coord = np.load('/usr/storage/yongjie/scPhere/others/PoincareMaps-master/log_Moignard2015_poin_maps/path_30_1.0_2.0/result/latent.npy')
+    # dv_coord = np.load('/usr/data/DMT_Nature/new/log_DHV/log_Moignard2015_dv_poin/path_euclidean_poin_dist_mobiusm_v2_dsml_100.0_0.001_-1.0_5_eu_poin_2_500_2.0_Adam_leaky_relu_5_1.0_1.0_1000.0_no_no_dmt_aug_no_0.0005_0.0_0.0_100.0_500_300_100/latent_epoch_299.npy')
+    dhv_coord = np.load('logs/log_Moignard2015_new/path_Ours/latent_10_5_0.005_0.005_1.0_10.0_10.npy')
+    # dhv_coord = np.load('log_Moignard2015/path_poin_dist_mobiusm_v2_poin_dist_mobiusm_v2_dsml_0.001_500_1.0_1.0_1.0_100.0_-1.0_5_eu_poin_2_2.0_RiemannianAdam_leaky_relu_5_1.0_1.0_1000.0_no_no_dmt_aug_no_0.0_0.0_100.0_500_300_100/result/latent_epoch_299.npy')
+    # plt.title(data_name, fontweight='bold')
+    # plt.xlabel("Goodness of global geometry preservation", fontweight='bold')
+    # plt.ylabel("Goodness of local geometry preservation", fontweight='bold')
+
+    # plt.scatter([0.8691], [0.6259], c='r', marker='o', s=50) # Poin_maps
+    # plt.scatter([0.8967], [0.6080], c='g', marker='o', s=50) # UMAP
+    # plt.scatter([0.8686], [0.6064], c='b', marker='o', s=50) # t-SNE
+    # plt.scatter([0.8603], [0.5639], c='r', marker='^', s=50) # PHATE
+    # plt.scatter([0.8458], [0.5434], c='g', marker='^', s=50) # DiffMap
+    # plt.scatter([0.8129], [0.5318], c='b', marker='^', s=50) # ForceAtlas2
+    # # plt.scatter([0.9273], [0.5699], c='r', marker='D', s=50) # PCA
+    # plt.scatter([0.8921], [0.6128], c='g', marker='*', s=50) # DV_Poin
+    # plt.scatter([0.9091], [0.6132], c='r', marker='*', s=100) # DHV_Poin
+
+    # plt.show()
+    # plt.xticks(weight='bold')
+    # plt.yticks(weight='bold')
+    # legend_properties = {'weight':'bold'}
+    # plt.legend(['Poin_maps', 'UMAP', 't-SNE', 'PHATE', 'DiffMap', 'ForceAtlas2', 'DV_Poin', 'DHV_Poin'], loc='best', frameon=False, prop=legend_properties)
+    # plt.savefig('benchmarks/{}.png'.format(data_name), dpi=600, bbox_inches='tight')
+    # plt.close()
+
+    # a = np.where(dhv_coord[:,0] > 0.28)
+    # true_labels[a] = 'Meso'
 
 root = "PS"
 # labels_order = ['Meso', '4SFG', '4SG', 'HF', 'NP', 'PS']
@@ -907,26 +980,26 @@ iroot = init_scanpy_root(data, root, true_labels)
 #### Eu methods
 plotBenchamrks(sadata, true_labels, true_labels_order, f"benchmarks/{data_name}", ms=ms, coldict=color_dict)
 
-### Poincaré map
-fout = f"benchmarks/{data_name + '_Poincaré map'}"
-model = PoincareMaps(poincare_coord, model_name='Poincaré map')
-model.plot('ori', labels=true_labels, file_name=fout + '_ori', 
-        title_name='Poincaré map', zoom=None, bbox=(1.1, 0.8), ms=ms, coldict=color_dict)
-model.iroot = iroot
-model.rotate()
-model.plot('rot', labels=true_labels, file_name=fout + '_rotated', 
-        title_name='Poincaré map rotated', zoom=None, show=True, bbox=(1.1, 0.8), ms=ms, coldict=color_dict)
+# ### Poincaré map
+# fout = f"benchmarks/{data_name + '_Poincaré map'}"
+# model = PoincareMaps(poincare_coord, model_name='Poincaré map')
+# model.plot('ori', labels=true_labels, file_name=fout + '_ori', 
+#         title_name='Poincaré map', zoom=None, bbox=(1.1, 0.8), ms=ms, coldict=color_dict)
+# model.iroot = iroot
+# model.rotate()
+# model.plot('rot', labels=true_labels, file_name=fout + '_rotated', 
+#         title_name='Poincaré map rotated', zoom=None, show=True, bbox=(1.1, 0.8), ms=ms, coldict=color_dict)
 
-### DV
-if dv_coord is not None:
-    fout = f"benchmarks/{data_name + '_DV_poin'}"
-    model = PoincareMaps(dv_coord, model_name='dv')
-    model.plot('ori', labels=true_labels, file_name=fout + '_ori', 
-            title_name='DV', zoom=None, bbox=(1.1, 0.8), ms=ms, coldict=color_dict)
-    model.iroot = iroot
-    model.rotate()
-    model.plot('rot', labels=true_labels, file_name=fout + '_rotated', 
-            title_name='DV rotated', zoom=None, show=True, bbox=(1.1, 0.8), ms=ms, coldict=color_dict)
+# ### DV
+# if dv_coord is not None:
+#     fout = f"benchmarks/{data_name + '_DV_poin'}"
+#     model = PoincareMaps(dv_coord, model_name='dv')
+#     model.plot('ori', labels=true_labels, file_name=fout + '_ori', 
+#             title_name='DV', zoom=None, bbox=(1.1, 0.8), ms=ms, coldict=color_dict)
+#     model.iroot = iroot
+#     model.rotate()
+#     model.plot('rot', labels=true_labels, file_name=fout + '_rotated', 
+#             title_name='DV rotated', zoom=None, show=True, bbox=(1.1, 0.8), ms=ms, coldict=color_dict)
 
 ## DHV
 fout = f"benchmarks/{data_name + '_DHV'}"
@@ -972,29 +1045,44 @@ model.get_distances()
 
 # markers gene cluster finding
 print('PS genes')
-ps_ery = find(col_names, ['Hhex', 'Kdr', 'Gfi1b', 'Fli1', 'Cdh5', 'HbbbH1'])
+ps_ery = find(col_names, ['Cdh5', 'Meis1', 'Sox17', 'HbbbH1', 'Itga2b', 'Myb'])
 model.plot_cluster_markers(data[:,ps_ery], true_labels, 'PS', col_names[ps_ery], 
                    file_name=fout + '_ps_markers', pm_type='ori', sc=3, fs=9)
 
 print('HF genes')
-ps_ery = find(col_names, ['HbbbH1', 'Gfi1b', 'Myb', 'Sox17', 'Cdh5', 'Meis1'])
+ps_ery = find(col_names, ['Cdh5', 'Fli1', 'Kdr', 'Gfi1b', 'HbbbH1', 'Sox7'])
 model.plot_cluster_markers(data[:,ps_ery], true_labels, 'HF', col_names[ps_ery], 
                    file_name=fout + '_hf_markers', pm_type='ori', sc=3, fs=9)
 
 print('NP genes')
-ps_ery = find(col_names, ['Fli1', 'Hhex', 'Cdh5', 'Kdr', 'HbbbH1', 'Cdh1'])
+ps_ery = find(col_names, ['Myb', 'Sox17', 'Meis1', 'Cdh5', 'HbbbH1', 'Itga2b'])
 model.plot_cluster_markers(data[:,ps_ery], true_labels, 'NP', col_names[ps_ery], 
                    file_name=fout + '_np_markers', pm_type='ori', sc=3, fs=9)
 
 print('4SG genes')
-ps_ery = find(col_names, ['HbbbH1', 'Cdh5', 'Kdr', 'Itga2b', 'Fli1', 'Hhex'])
+ps_ery = find(col_names, ['Gfi1b', 'Kdr', 'Fli1', 'Gata1', 'Cdh1', 'Itga2b'])
 model.plot_cluster_markers(data[:,ps_ery], true_labels, '4SG', col_names[ps_ery], 
                    file_name=fout + '_4sg_markers', pm_type='ori', sc=3, fs=9)
 
 print('4SFG genes')
-ps_ery = find(col_names, ['Cdh5', 'Itga2b', 'HbbbH1', 'Sfpi1', 'Lyl1', 'Meis1'])
+ps_ery = find(col_names, ['Myb', 'HbbbH1', 'Sox17', 'Gfi1b', 'Gata1', 'Ikaros'])
 model.plot_cluster_markers(data[:,ps_ery], true_labels, '4SFG', col_names[ps_ery], 
                    file_name=fout + '_4sfg_markers', pm_type='ori', sc=3, fs=9)
+
+print('NP HF genes')
+ps_ery = find(col_names, ['Cdh5', 'Gfi1b', 'Fli1', 'Hhex', 'HbbbH1', 'Gata1'])
+model.plot_cluster_inter_markers(data[:,ps_ery], true_labels, 'NP', 'HF', col_names[ps_ery], 
+                   file_name=fout + '_np_hf_markers', pm_type='ori', sc=3, fs=9)
+
+print('HF 4SFG genes')
+ps_ery = find(col_names, ['HbbbH1', 'Gfi1b', 'Kdr', 'Fli1', 'Cdh5', 'Gata1'])
+model.plot_cluster_inter_markers(data[:,ps_ery], true_labels, 'HF', '4SFG', col_names[ps_ery], 
+                   file_name=fout + '_hf_4sfg_markers', pm_type='ori', sc=3, fs=9)
+
+print('HF 4SG genes')
+ps_ery = find(col_names, ['Ikaros', 'Cbfa2t3h', 'Myb', 'Cdh5', 'Sox17', 'Meis1'])
+model.plot_cluster_inter_markers(data[:,ps_ery], true_labels, 'HF', '4SFG', col_names[ps_ery], 
+                   file_name=fout + '_hf_4sg_markers', pm_type='ori', sc=3, fs=9)
 
 # clusters
 np.random.seed(seed=2018)
@@ -1004,8 +1092,50 @@ col_dict_clust = dict(zip(np.unique(model.clusters), colors_palette[:len(np.uniq
 model.plot('ori', labels=model.clusters, file_name=fout+'_clusters', labels_name='clusters', title_name='DHV', zoom=None, bbox=(1.0, 0.7), ms=ms)
 get_confusion_matrix(model.clusters, true_labels_order, true_labels_ori, title=title_name, fname=fout+'_cm')
 true_labels = np.copy(true_labels_ori)
-meso_name = 1.0
+meso_name = 0.0 ###################### 需要更新
 true_labels[model.clusters == meso_name] = 'Meso'
+np.save('new_true_labels.npy', true_labels)
+
+# markers gene cluster finding
+print('PS genes')
+ps_ery = find(col_names, ['Itga2b', 'Cdh5', 'Fli1', 'HbbbH1', 'Gfi1b', 'Sox7'])
+model.plot_cluster_markers(data[:,ps_ery], true_labels, 'PS', col_names[ps_ery], 
+                   file_name=fout + '_new_ps_markers', pm_type='ori', sc=3, fs=9)
+
+print('HF genes')
+ps_ery = find(col_names, ['Cdh5', 'Sox7', 'Fli1', 'HbbbH1', 'Gfi1b', 'Sox17'])
+model.plot_cluster_markers(data[:,ps_ery], true_labels, 'HF', col_names[ps_ery], 
+                   file_name=fout + '_new_hf_markers', pm_type='ori', sc=3, fs=9)
+
+print('NP genes')
+ps_ery = find(col_names, ['HbbbH1', 'Fli1', 'Sox7', 'Kdr', 'Itga2b', 'Cdh5'])
+model.plot_cluster_markers(data[:,ps_ery], true_labels, 'NP', col_names[ps_ery], 
+                   file_name=fout + '_new_np_markers', pm_type='ori', sc=3, fs=9)
+
+print('4SG genes')
+ps_ery = find(col_names, ['Ikaros', 'Gfi1b', 'Cdh5', 'Sox7', 'Sox17', 'Gata1'])
+model.plot_cluster_markers(data[:,ps_ery], true_labels, '4SG', col_names[ps_ery], 
+                   file_name=fout + '_new_4sg_markers', pm_type='ori', sc=3, fs=9)
+
+print('4SFG genes')
+ps_ery = find(col_names, ['HbbbH1', 'Ikaros', 'Gfi1b', 'Myb', 'Gata1', 'Sox17'])
+model.plot_cluster_markers(data[:,ps_ery], true_labels, '4SFG', col_names[ps_ery], 
+                   file_name=fout + '_new_4sfg_markers', pm_type='ori', sc=3, fs=9)
+
+print('NP HF genes')
+ps_ery = find(col_names, ['Cdh5', 'Sox17', 'HbbbH1', 'Erg', 'Myb', 'Meis1'])
+model.plot_cluster_inter_markers(data[:,ps_ery], true_labels, 'NP', 'HF', col_names[ps_ery], 
+                   file_name=fout + '_new_np_hf_markers', pm_type='ori', sc=3, fs=9)
+
+print('HF 4SFG genes')
+ps_ery = find(col_names, ['Cdh5', 'HbbbH1', 'Gfi1b', 'Sox7', 'Gata1', 'Sox17'])
+model.plot_cluster_inter_markers(data[:,ps_ery], true_labels, 'HF', '4SFG', col_names[ps_ery], 
+                   file_name=fout + '_new_hf_4sfg_markers', pm_type='ori', sc=3, fs=9)
+
+print('HF 4SG genes')
+ps_ery = find(col_names, ['Ikaros', 'Cdh5', 'Cbfa2t3h', 'Runx1', 'HoxB4', 'Meis1'])
+model.plot_cluster_inter_markers(data[:,ps_ery], true_labels, 'HF', '4SFG', col_names[ps_ery], 
+                   file_name=fout + '_new_hf_4sg_markers', pm_type='ori', sc=3, fs=9)
 
 # plot poincare rorated
 fname='{0}_{1}'.format(fout, 'rotated_Haghverdi')
@@ -1078,7 +1208,7 @@ idx1 = random.choice(np.where(model.distances[idx_leaf2, head_idx]/np.max(model.
 print(idx1)
 iroot_ps = head_idx[idx1]
 fname='{0}_{1}'.format(fout, 'rotated_PS')
-model.iroot = 2080
+model.iroot = 2011 #################### 需要更新
 model.rotate()
 zoom_scale=1.2
 title_name='rotation'
@@ -1108,7 +1238,7 @@ plot_dp_on_poincare(model.coordinates_rotated,
                     np.array(sadata.obs['dpt_pseudotime']), cell=model.iroot,
                     title_name='dpt_pseudotime', file_name=fout+'_dpt_pseudotime_rotated_my_myroot', fs=fs)
 model.lineages[true_labels == 'Meso'] = -1
-model.lineages[model.lineages == 4] = -1
+# model.lineages[model.lineages == 4] = -1
 # model.lineages[model.lineages == 4] = 3
 model.plot('rot', labels=model.lineages, file_name=fout + '_lineages', 
             fs=9, bbox=(1.0, 0.7), ms=ms, title_name=title_name)
@@ -1164,7 +1294,7 @@ plt.savefig(fout + title_name + '_violin.png', format='png', dpi=600)
 model.iroot
 sns.set(style="whitegrid")
 n1 = 1
-n2 = 4
+n2 = 5
 fs=9
 pl_size=2
 fig, axs = plt.subplots(n1, n2, sharex=True, sharey=True, figsize=(n2*pl_size , n1*pl_size))
