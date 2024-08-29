@@ -22,14 +22,14 @@ python main.py
 2. **Batch correction**:
 python main_batch_correction.py
 
-3. **Gene selection**:
+3. **Visualization and Pseudotime inference**:
+python main_visualization_pseudotime.py
+
+4. **Gene selection**:
 python main_gene_selection.py
 
-4. **Baseline**:
+5. **Baseline**:
 python main_baseline.py || main_baseline_batch_correction.py
-
-5. **Visualization and Pseudotime inference**:
-python main_visualization_pseudotime.py
 
 ## Contact
 
